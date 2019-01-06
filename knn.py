@@ -6,9 +6,9 @@ label = []#记录最后预测结果
 list = []#记录训练K时，不同k对应的正确率
 vec_num = int(input("输入向量的维度(不包括标签)："))
 
-train_filename = r"C:\Users\liuji\Desktop\third\知识分析\10165102139_刘金昊_第一次作业_Python\train.txt"
-test_filename = r"C:\Users\liuji\Desktop\third\知识分析\10165102139_刘金昊_第一次作业_Python\test.txt"
-an_filename = r"C:\Users\liuji\Desktop\third\知识分析\10165102139_刘金昊_第一次作业_Python\an.txt"
+train_filename = r"D:\train.txt"
+test_filename = r"D:\test.txt"
+an_filename = r"D:\an.txt"
 
 def filetodata(flag):
     a = np.loadtxt(train_filename, delimiter=",", dtype=str)
