@@ -2,13 +2,6 @@ import numpy as np
 import operator
 
 
-label = []#记录最后预测结果
-acc = []#记录训练K时，不同k对应的正确率
-
-train_filename = r"./train.txt"
-test_filename = r"./test.txt"
-an_filename = r"./ans.txt"
-
 def autonorm(data):#归1化
     mn = data.min(0)
     mx = data.max(0)
@@ -29,8 +22,8 @@ def knn(mat,test, k,flag):#flag等于1，训练找最佳k，flag = 0测试，mat
         distance = (squr.sum(axis=1))**0.5
         sortdistance = distance.argsort()
         classcount = {}#字典来计数
-        for j in range(k):#记录统计最近k个邻居的种类
-            votelabel = alabel[sortdistance[j]]#记录最近点的label
+        for j in range(1,k+1):#记录统计最近k个邻居的种类,最近的是本身
+            votelabel = str(alabel[sortdistance[j]][0])#记录最近点的label
             classcount[votelabel] = classcount.get(votelabel,0) + 1 #此时每个点在统计种类是都是1，根据距离越近越相似的观点，此处可以对近的点加一个大的权重
         sortedclasscount = sorted(classcount.items(),key=operator.itemgetter(1),reverse=True)
         if flag == 1:
@@ -38,38 +31,48 @@ def knn(mat,test, k,flag):#flag等于1，训练找最佳k，flag = 0测试，mat
                 corr += 1
         else:
             label.append(sortedclasscount[0][0])
+
     if flag == 1:
         print(corr /trainsize)
         acc.append(corr / trainsize)
 
-data = np.loadtxt(train_filename, delimiter=",", dtype=str)
-data = data[:, 0:4]
-data = data.astype(np.float)
-tlabel = []
-c = a[:, 4:5]
-for i in range(len(c)):
-    tlabel.append(c[i][0])
-datatrain = data
-alabel = tlabel
 
-trainData = autonorm(datatrain)
-for i in range(1,11):
-    print("k == %d" %i)
-    knn(trainData,trainData,i,1)
-print("发现k=%d 时，正确率最高" %(acc.index(max(acc))+1) )
+if '__main__' == __name__:
+    label = []#记录最后预测结果
+    acc = []#记录训练K时，不同k对应的正确率
 
-data2 = np.loadtxt(test_filename, delimiter=",", dtype=str)
-datatest = data2[:, 0:4]
-datatest = datatest.astype(np.float)
+    train_filename = r"./train.txt"
+    test_filename = r"./test.txt"
+    an_filename = r"./ans.txt"
+    datas = np.loadtxt(train_filename, delimiter=",", dtype=str)
+    data = datas[:, 0:4]
+    data = data.astype(np.float)
+    tlabel = []
+    c = datas[:, 4:5]
+    for i in range(len(c)):
+        tlabel.append(c[i])
+    datatrain = data
+    alabel = tlabel
 
 
-test = autonorm(datatest)
-le = len(test)
+    trainData = autonorm(datatrain)
+    for i in range(1,11):
+        print("k == %d" %i)
+        knn(trainData,trainData,i,1)
+    print("发现k=%d 时，正确率最高" %(acc.index(max(acc))+1) )
 
-knn(trainData,test,(acc.index(max(acc))+1),0)
+    data2 = np.loadtxt(test_filename, delimiter=",", dtype=str)
+    datatest = data2[:, 0:4]
+    datatest = datatest.astype(np.float)
 
-fl=open(an_filename, 'w')
-for i in label:
-    fl.write(i)
-    fl.write("\n")
-fl.close()
+
+    test = autonorm(datatest)
+    le = len(test)
+
+    knn(trainData,test,(acc.index(max(acc))+1),0)
+
+    fl=open(an_filename, 'w')
+    for i in label:
+        fl.write(i)
+        fl.write("\n")
+    fl.close()
